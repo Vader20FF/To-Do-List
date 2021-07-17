@@ -20,6 +20,7 @@ struct ContentView: View {
         List {
             ForEach(items) { item in
                 Text("Item at \(item.timestamp!, formatter: itemFormatter)")
+                Text("START")
             }
             .onDelete(perform: deleteItems)
         }
