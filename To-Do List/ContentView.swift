@@ -17,21 +17,42 @@ struct ContentView: View {
     private var items: FetchedResults<Item>
 
     var body: some View {
-        List {
-            ForEach(items) { item in
-                Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                Text("START")
+        GeometryReader { geometry in
+            let screenWidth = geometry.size.width
+            let screenHeight = geometry.size.height
+            
+            VStack {
+                List {
+                    ForEach(items) { item in
+                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
+                            .foregroundColor(.black)
+                    }
+                    .onDelete(perform: deleteItems)
+                    .onTapGesture {
+                        editItem()
+                    }
+                }
+                  
+                ZStack {
+                    RoundedRectangle(cornerRadius: 25, style: .continuous)
+                        .fill(Color.blue)
+                        .frame(width: screenWidth * 0.3, height: screenHeight * 0.05)
+                    
+                    Button(action: addItem) {
+                        Label("Add Item", systemImage: "plus")
+                            .foregroundColor(.white)
+                    }
+                }
             }
-            .onDelete(perform: deleteItems)
         }
-        .toolbar {
-            #if os(iOS)
-            EditButton()
-            #endif
-
-            Button(action: addItem) {
-                Label("Add Item", systemImage: "plus")
-            }
+    }
+    
+    private func saveContext() {
+        do {
+            try viewContext.save()
+        } catch {
+            let nsError = error as NSError
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
     }
 
@@ -40,14 +61,13 @@ struct ContentView: View {
             let newItem = Item(context: viewContext)
             newItem.timestamp = Date()
 
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
+            saveContext()
+        }
+    }
+    
+    private func editItem() {
+        withAnimation {
+            
         }
     }
 
@@ -55,15 +75,12 @@ struct ContentView: View {
         withAnimation {
             offsets.map { items[$0] }.forEach(viewContext.delete)
 
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
+            saveContext()
         }
+    }
+    
+    private func getDayFromDate(date: Date) -> DateComponents {
+        date.get(.day)
     }
 }
 
@@ -77,5 +94,15 @@ private let itemFormatter: DateFormatter = {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    }
+}
+
+extension Date {
+    func get(_ components: Calendar.Component..., calendar: Calendar = Calendar.current) -> DateComponents {
+        return calendar.dateComponents(Set(components), from: self)
+    }
+
+    func get(_ component: Calendar.Component, calendar: Calendar = Calendar.current) -> Int {
+        return calendar.component(component, from: self)
     }
 }
