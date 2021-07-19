@@ -13,8 +13,8 @@ struct ContentView: View {
     @AppStorage("isDarkMode") private var darkMode = false
 
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
+            sortDescriptors: [NSSortDescriptor(keyPath: \Item.title, ascending: true)],
+            animation: .default)
     private var items: FetchedResults<Item>
 
     var body: some View {
@@ -47,16 +47,14 @@ struct ContentView: View {
                     VStack {
                         List {
                             ForEach(items) { item in
-                                if NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)!.components([.weekday], from: item.timestamp!).weekday == 2 {
                                     VStack {
-                                        NavigationLink(destination: Text("destination")) {
-                                            Text("Item at \(item.timestamp!, formatter: itemFormatter)")
+                                        NavigationLink(destination: DetailView()) {
+                                            Text("\(item.title!)")
                                                 .font(.system(size: screenWidth * 0.05))
                                         }
                                     }
                                     .navigationTitle("Monday")
                                 }
-                            }
                             .onDelete(perform: deleteItems)
                         }
                         .frame(width: screenWidth, height: screenHeight)
@@ -93,7 +91,10 @@ struct ContentView: View {
     private func addItem() {
         withAnimation {
             let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+            newItem.title = "newItem"
+            newItem.fullDescription = "description"
+            newItem.date = Date()
+            newItem.finished = false
 
             saveContext()
         }
@@ -106,34 +107,24 @@ struct ContentView: View {
             saveContext()
         }
     }
-    
-    private func getDayFromDate(date: Date) -> DateComponents {
-        date.get(.day)
-    }
-}
-
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
-
-extension Date {
-    func get(_ components: Calendar.Component..., calendar: Calendar = Calendar.current) -> DateComponents {
-        return calendar.dateComponents(Set(components), from: self)
-    }
-
-    func get(_ component: Calendar.Component, calendar: Calendar = Calendar.current) -> Int {
-        return calendar.component(component, from: self)
-    }
 }
 
 struct EditView: View {
     var body: some View {
         GeometryReader { geometry in
-            let screenWidth = geometry.size.width
-            let screenHeight = geometry.size.height
+//            let screenWidth = geometry.size.width
+//            let screenHeight = geometry.size.height
+        }
+    }
+}
+
+struct DetailView: View {
+    var body: some View {
+        GeometryReader { geometry in
+//            let screenWidth = geometry.size.width
+//            let screenHeight = geometry.size.height
+            
+            Text("LOL")
         }
     }
 }
