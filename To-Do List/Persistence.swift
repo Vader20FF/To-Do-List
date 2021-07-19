@@ -17,7 +17,7 @@ struct PersistenceController {
             let newItem = Item(context: viewContext)
             newItem.title = "newItem"
             newItem.fullDescription = "description"
-            newItem.date = Date()
+            newItem.day = "Monday"
             newItem.finished = false
         }
         do {
