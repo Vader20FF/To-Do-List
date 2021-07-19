@@ -10,6 +10,7 @@ import CoreData
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @AppStorage("isDarkMode") private var darkMode = false
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
@@ -22,15 +23,45 @@ struct ContentView: View {
             let screenHeight = geometry.size.height
             
             VStack {
-                List {
-                    ForEach(items) { item in
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                            .foregroundColor(.black)
+                HStack {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 25)
+                            .foregroundColor(darkMode == true ? .white : .black)
+                            .frame(width: screenWidth * 0.55, height: screenHeight * 0.08)
+                        
+                        Text("To-Do List 📝")
+                            .font(.largeTitle)
+                            .foregroundColor(darkMode == true ? .black : .white)
                     }
-                    .onDelete(perform: deleteItems)
-                    .onTapGesture {
-                        editItem()
+                    .padding(.leading, screenWidth * 0.05)
+                    
+                    Spacer()
+                    
+                    Toggle("", isOn: $darkMode)
+                        .toggleStyle(SwitchToggleStyle(tint: .clear))
+                        .frame(width: screenWidth * 0.15)
+                        .padding(.trailing, screenWidth * 0.1)
+                }
+                
+                NavigationView {
+                    VStack {
+                        List {
+                            ForEach(items) { item in
+                                if NSCalendar(calendarIdentifier: NSCalendar.Identifier.gregorian)!.components([.weekday], from: item.timestamp!).weekday == 2 {
+                                    VStack {
+                                        NavigationLink(destination: Text("destination")) {
+                                            Text("Item at \(item.timestamp!, formatter: itemFormatter)")
+                                                .font(.system(size: screenWidth * 0.05))
+                                        }
+                                    }
+                                    .navigationTitle("Monday")
+                                }
+                            }
+                            .onDelete(perform: deleteItems)
+                        }
+                        .frame(width: screenWidth, height: screenHeight)
                     }
+                    .padding(.bottom, -screenHeight * 0.3)
                 }
                   
                 ZStack {
@@ -44,6 +75,9 @@ struct ContentView: View {
                     }
                 }
             }
+            .padding(.top, screenHeight * 0.025)
+            .preferredColorScheme(darkMode ? .dark : .light)
+            .environment(\.colorScheme, darkMode ? .dark : .light)
         }
     }
     
@@ -62,12 +96,6 @@ struct ContentView: View {
             newItem.timestamp = Date()
 
             saveContext()
-        }
-    }
-    
-    private func editItem() {
-        withAnimation {
-            
         }
     }
 
@@ -91,12 +119,6 @@ private let itemFormatter: DateFormatter = {
     return formatter
 }()
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-    }
-}
-
 extension Date {
     func get(_ components: Calendar.Component..., calendar: Calendar = Calendar.current) -> DateComponents {
         return calendar.dateComponents(Set(components), from: self)
@@ -106,3 +128,20 @@ extension Date {
         return calendar.component(component, from: self)
     }
 }
+
+struct EditView: View {
+    var body: some View {
+        GeometryReader { geometry in
+            let screenWidth = geometry.size.width
+            let screenHeight = geometry.size.height
+        }
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    }
+}
+
+
