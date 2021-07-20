@@ -18,6 +18,7 @@ struct PersistenceController {
             newItem.title = "newItem"
             newItem.fullDescription = "description"
             newItem.day = "Monday"
+            newItem.date = Date()
             newItem.finished = false
         }
         do {
