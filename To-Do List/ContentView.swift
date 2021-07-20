@@ -8,6 +8,8 @@
 import SwiftUI
 import CoreData
 
+let daysOfTheWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @AppStorage("isDarkMode") private var darkMode = false
@@ -49,18 +51,27 @@ struct ContentView: View {
                             ForEach(items) { item in
                                     VStack {
                                         NavigationLink(destination: DetailView(item: item)) {
-                                            Text("\(item.title!)")
-                                                .font(.system(size: screenWidth * 0.05))
+                                            HStack {
+                                                Text("\(item.title!)")
+                                                    .font(.system(size: screenWidth * 0.05))
+                                                    .frame(width: screenWidth * 0.6, height: screenHeight * 0.04, alignment: .leading)
+                                                
+                                                if item.finished == true {
+                                                    Circle().foregroundColor(.green)
+                                                } else {
+                                                    Circle().foregroundColor(.red)
+                                                }
+                                            }
                                         }
                                     }
-                                    .navigationTitle("Monday")
                                 }
                             .onDelete(perform: deleteItems)
                         }
-                        .frame(width: screenWidth, height: screenHeight)
+                        .navigationTitle("")
                     }
                     .padding(.bottom, -screenHeight * 0.3)
                 }
+
                   
                 ZStack {
                     RoundedRectangle(cornerRadius: 25, style: .continuous)
@@ -78,6 +89,16 @@ struct ContentView: View {
             .environment(\.colorScheme, darkMode ? .dark : .light)
         }
     }
+    
+//    private func divideItemsAccordingToTheirDays(items: [Item]) -> [[Item]] {
+//        var itemsInDays: [[Item]] = [[], [], [], [], [], [], []]
+//
+//        ForEach(items, id: \.self) { item in
+//            if item.day! == "Monday" {
+//                itemsInDays[] = item
+//            }
+//        }
+//    }
     
     private func saveContext() {
         do {
@@ -114,7 +135,7 @@ struct DetailView: View {
     
     @State private var itemTitle = ""
     @State private var itemDescription = ""
-    @State private var itemDay = ""
+    @State private var itemDay = getDayOfTheWeekFromDate(passedDate: Date())
     @State private var itemDate = Date()
     @State private var itemFinished = false
     
@@ -141,26 +162,28 @@ struct DetailView: View {
             let screenWidth = geometry.size.width
             let screenHeight = geometry.size.height
             
-            VStack (spacing: screenHeight * 0.05) {
+            VStack (spacing: screenHeight * 0.04) {
                 Section(header: Text("TITLE")) {
                     TextField(self.item.title!, text: $itemTitle)
-                        .padding(.leading, screenWidth * 0.05)
+                        .padding(.horizontal, screenWidth * 0.05)
+                        
                 }
                 
                 Section(header: Text("DESCRIPTION")) {
                     TextField(self.item.fullDescription!, text: $itemDescription)
-                        .padding(.leading, screenWidth * 0.05)
+                        .padding(.horizontal, screenWidth * 0.05)
                         
                 }
                 
+                
                 Section(header: Text("DAY")) {
-                    TextField(self.item.day!, text: $itemDay)
-                        .padding(.leading, screenWidth * 0.05)
+                    Text(self.item.day!)
+                        .foregroundColor(.blue)
                 }
                 
                 Section(header: Text("DATE")) {
-                    DatePicker("", selection: $itemDate, in: dateRange, displayedComponents: [.date, .hourAndMinute])
-                        .padding(.trailing, screenWidth * 0.28)
+                    DatePicker("", selection: $itemDate, in: dateRange, displayedComponents: [.date])
+                        .padding(.trailing, screenWidth * 0.37)
                         
                 }
                 
@@ -181,9 +204,8 @@ struct DetailView: View {
                         if !self.itemDescription.isEmpty {
                             self.item.fullDescription = self.itemDescription
                         }
-                        if !self.itemDay.isEmpty {
-                            self.item.day = self.itemDay
-                        }
+                        
+                        self.item.day = getDayOfTheWeekFromDate(passedDate: self.itemDate)
                         self.item.date = self.itemDate
                         self.item.finished = self.itemFinished
                     }) {
@@ -192,9 +214,39 @@ struct DetailView: View {
                     }
                 }
             }
+            .textFieldStyle(RoundedBorderTextFieldStyle())
         }
     }
     
+}
+
+public func getDayOfTheWeekFromDate(passedDate: Date) -> String {
+    let date = passedDate
+    let calendar = Calendar.current
+    let components = calendar.dateComponents([.weekday], from: date)
+    let numberOfDayOfWeek = components.weekday
+    var dayOfWeek: String
+    
+    switch numberOfDayOfWeek {
+    case 1:
+        dayOfWeek = "Sunday"
+    case 2:
+        dayOfWeek = "Monday"
+    case 3:
+        dayOfWeek = "Tuesday"
+    case 4:
+        dayOfWeek = "Wednesday"
+    case 5:
+        dayOfWeek = "Thursday"
+    case 6:
+        dayOfWeek = "Friday"
+    case 7:
+        dayOfWeek = "Saturday"
+    default:
+        dayOfWeek = ""
+    }
+    
+    return dayOfWeek
 }
 
 struct ContentView_Previews: PreviewProvider {
