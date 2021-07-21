@@ -50,7 +50,7 @@ struct ContentView: View {
                         List {
                             ForEach(items) { item in
                                     VStack {
-                                        NavigationLink(destination: DetailView(item: item)) {
+                                        NavigationLink(destination: DetailView(newItem: item)) {
                                             HStack {
                                                 Text("\(item.title!)")
                                                     .font(.system(size: screenWidth * 0.05))
@@ -114,7 +114,8 @@ struct ContentView: View {
             let newItem = Item(context: viewContext)
             newItem.title = "newItem"
             newItem.fullDescription = "description"
-            newItem.day = "Monday"
+            newItem.day = getDayOfTheWeekFromDate(passedDate: Date())
+            newItem.date = Date()
             newItem.finished = false
 
             saveContext()
@@ -131,21 +132,10 @@ struct ContentView: View {
 }
 
 struct DetailView: View {
-    private var item: Item
+    @State private var item: Item
     
-    @State private var itemTitle = ""
-    @State private var itemDescription = ""
-    @State private var itemDay = getDayOfTheWeekFromDate(passedDate: Date())
-    @State private var itemDate = Date()
-    @State private var itemFinished = false
-    
-    init(item: Item) {
-        self.item = item
-        self.itemTitle = self.item.title!
-        self.itemDescription = self.item.fullDescription!
-        self.itemDay = self.item.day!
-        self.itemDate = self.item.date!
-        self.itemFinished = self.item.finished
+    init(newItem: Item) {
+        _item = State(initialValue: newItem)
     }
     
     let dateRange: ClosedRange<Date> = {
@@ -164,17 +154,14 @@ struct DetailView: View {
             
             VStack (spacing: screenHeight * 0.04) {
                 Section(header: Text("TITLE")) {
-                    TextField(self.item.title!, text: $itemTitle)
+                    TextField(self.item.title!, text: $item.title ?? "")
                         .padding(.horizontal, screenWidth * 0.05)
-                        
                 }
                 
                 Section(header: Text("DESCRIPTION")) {
-                    TextField(self.item.fullDescription!, text: $itemDescription)
+                    TextField(self.item.fullDescription!, text: $item.fullDescription ?? "")
                         .padding(.horizontal, screenWidth * 0.05)
-                        
                 }
-                
                 
                 Section(header: Text("DAY")) {
                     Text(self.item.day!)
@@ -182,42 +169,26 @@ struct DetailView: View {
                 }
                 
                 Section(header: Text("DATE")) {
-                    DatePicker("", selection: $itemDate, in: dateRange, displayedComponents: [.date])
+                    DatePicker("", selection: $item.date ?? Date(), in: dateRange, displayedComponents: [.date])
                         .padding(.trailing, screenWidth * 0.37)
-                        
                 }
                 
                 Section(header: Text("FINISHED")) {
-                    Toggle("", isOn: $itemFinished)
+                    Toggle("", isOn: $item.finished)
                         .padding(.trailing, screenWidth * 0.45)
-                }
-                
-                ZStack {
-                    RoundedRectangle(cornerRadius: 25, style: .continuous)
-                        .fill(Color.green)
-                        .frame(width: screenWidth * 0.35, height: screenHeight * 0.07)
-                    
-                    Button(action: {
-                        if !self.itemTitle.isEmpty {
-                            self.item.title = self.itemTitle
-                        }
-                        if !self.itemDescription.isEmpty {
-                            self.item.fullDescription = self.itemDescription
-                        }
-                        
-                        self.item.day = getDayOfTheWeekFromDate(passedDate: self.itemDate)
-                        self.item.date = self.itemDate
-                        self.item.finished = self.itemFinished
-                    }) {
-                        Label("Save changes", systemImage: "")
-                            .foregroundColor(.white)
-                    }
                 }
             }
             .textFieldStyle(RoundedBorderTextFieldStyle())
         }
     }
     
+}
+
+public func ??<T>(lhs: Binding<Optional<T>>, rhs: T) -> Binding<T> {
+    Binding(
+        get: { lhs.wrappedValue ?? rhs },
+        set: { lhs.wrappedValue = $0 }
+    )
 }
 
 public func getDayOfTheWeekFromDate(passedDate: Date) -> String {

@@ -2,10 +2,10 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="18154" systemVersion="20F71" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
     <entity name="Item" representedClassName="Item" syncable="YES" codeGenerationType="class">
         <attribute name="date" attributeType="Date" defaultDateTimeInterval="648480060" usesScalarValueType="NO"/>
-        <attribute name="day" attributeType="String" defaultValueString=""/>
+        <attribute name="day" attributeType="String" defaultValueString="day"/>
         <attribute name="finished" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="fullDescription" optional="YES" attributeType="String"/>
-        <attribute name="title" attributeType="String" defaultValueString=""/>
+        <attribute name="fullDescription" attributeType="String" defaultValueString="fullDescription"/>
+        <attribute name="title" attributeType="String" defaultValueString="title"/>
     </entity>
     <elements>
         <element name="Item" positionX="-63" positionY="-18" width="128" height="104"/>
