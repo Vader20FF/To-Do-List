@@ -13,6 +13,7 @@ let daysOfTheWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Sa
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @AppStorage("isDarkMode") private var darkMode = false
+    @State var showAddFormView = false
 
     @FetchRequest(
             sortDescriptors: [NSSortDescriptor(keyPath: \Item.title, ascending: true)],
@@ -24,91 +25,55 @@ struct ContentView: View {
             let screenWidth = geometry.size.width
             let screenHeight = geometry.size.height
             
-            VStack {
-                HStack {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 25)
-                            .foregroundColor(darkMode == true ? .white : .black)
-                            .frame(width: screenWidth * 0.55, height: screenHeight * 0.08)
-                        
-                        Text("To-Do List 📝")
-                            .font(.largeTitle)
-                            .foregroundColor(darkMode == true ? .black : .white)
-                    }
-                    .padding(.leading, screenWidth * 0.05)
+            if showAddFormView {
+                AddTaskView()
+            } else {
+                VStack {
+                    TopView()
+                        .frame(width: screenWidth, height: screenHeight * 0.1)
+                        .padding(.top, screenHeight * 0.025)
                     
-                    Spacer()
-                    
-                    Toggle("", isOn: $darkMode)
-                        .toggleStyle(SwitchToggleStyle(tint: .clear))
-                        .frame(width: screenWidth * 0.15)
-                        .padding(.trailing, screenWidth * 0.1)
-                }
-                
-                NavigationView {
-                    VStack {
-                        List {
-                            ForEach(items) { item in
-                                    VStack {
-                                        NavigationLink(destination: DetailView(newItem: item)) {
-                                            HStack {
-                                                Text("\(item.title!)")
-                                                    .font(.system(size: screenWidth * 0.05))
-                                                    .frame(width: screenWidth * 0.6, height: screenHeight * 0.04, alignment: .leading)
-                                                
-                                                if item.finished == true {
-                                                    Circle().foregroundColor(.green)
-                                                } else {
-                                                    Circle().foregroundColor(.red)
-                                                }
+                    NavigationView {
+                        VStack {
+                            List {
+                                ForEach(items) { item in
+                                    NavigationLink(destination: DetailView(newItem: item)) {
+                                        HStack {
+                                            Text("\(item.title!)")
+                                                .font(.system(size: screenWidth * 0.05))
+                                                .frame(width: screenWidth * 0.6, height: screenHeight * 0.04, alignment: .leading)
+                                            
+                                            if item.finished == true {
+                                                Circle().foregroundColor(.green)
+                                            } else {
+                                                Circle().foregroundColor(.red)
                                             }
                                         }
                                     }
                                 }
-                            .onDelete(perform: deleteItems)
+                                .onDelete(perform: deleteItems)
+                            }
                         }
-                        .navigationTitle("")
+                        .navigationBarHidden(true)
                     }
-                    .padding(.bottom, -screenHeight * 0.3)
-                }
-
-                  
-                ZStack {
-                    RoundedRectangle(cornerRadius: 25, style: .continuous)
-                        .fill(Color.blue)
-                        .frame(width: screenWidth * 0.3, height: screenHeight * 0.05)
                     
-                    Button(action: addItem) {
-                        Label("Add Task", systemImage: "plus")
-                            .foregroundColor(.white)
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous)
+                            .fill(Color.blue)
+                            .frame(width: screenWidth * 0.3, height: screenHeight * 0.05)
+                        
+                        Button(action: { showAddFormView = true }) {
+                            Label("Add Task", systemImage: "plus")
+                                .foregroundColor(.white)
+                        }
                     }
                 }
+                .preferredColorScheme(darkMode ? .dark : .light)
+                .environment(\.colorScheme, darkMode ? .dark : .light)
             }
-            .padding(.top, screenHeight * 0.025)
-            .preferredColorScheme(darkMode ? .dark : .light)
-            .environment(\.colorScheme, darkMode ? .dark : .light)
         }
     }
     
-//    private func divideItemsAccordingToTheirDays(items: [Item]) -> [[Item]] {
-//        var itemsInDays: [[Item]] = [[], [], [], [], [], [], []]
-//
-//        ForEach(items, id: \.self) { item in
-//            if item.day! == "Monday" {
-//                itemsInDays[] = item
-//            }
-//        }
-//    }
-    
-    private func saveContext() {
-        do {
-            try viewContext.save()
-        } catch {
-            let nsError = error as NSError
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-        }
-    }
-
     private func addItem() {
         withAnimation {
             let newItem = Item(context: viewContext)
@@ -121,12 +86,98 @@ struct ContentView: View {
             saveContext()
         }
     }
+    
+    private func saveContext() {
+        do {
+            try viewContext.save()
+        } catch {
+            let nsError = error as NSError
+            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+        }
+    }
+    
+//    private func divideItemsAccordingToTheirDays(items: [Item]) -> [[Item]] {
+//        var itemsInDays: [[Item]] = [[], [], [], [], [], [], []]
+//
+//        ForEach(items, id: \.self) { item in
+//            if item.day! == "Monday" {
+//                itemsInDays[] = item
+//            }
+//        }
+//    }
 
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
             offsets.map { items[$0] }.forEach(viewContext.delete)
 
             saveContext()
+        }
+    }
+}
+
+struct AddTaskView: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    @AppStorage("isDarkMode") private var darkMode = false
+    @State var showTaskView = false
+    
+    var body: some View {
+        GeometryReader { geometry in
+            let screenWidth = geometry.size.width
+            let screenHeight = geometry.size.height
+            
+            VStack {
+                if showTaskView {
+                    withAnimation {
+                        ContentView()
+                    }
+                } else {
+                    
+                    TopView()
+                        .frame(width: screenWidth, height: screenHeight * 0.1)
+                        .padding(.top, screenHeight * 0.025)
+    //
+    //                VStack (spacing: screenHeight * 0.04) {
+    //                    Section(header: Text("TITLE")) {
+    //                        TextField(self.item.title!, text: $item.title ?? "")
+    //                            .padding(.horizontal, screenWidth * 0.05)
+    //                    }
+    //
+    //                    Section(header: Text("DESCRIPTION")) {
+    //                        TextField(self.item.fullDescription!, text: $item.fullDescription ?? "")
+    //                            .padding(.horizontal, screenWidth * 0.05)
+    //                    }
+    //
+    //                    Section(header: Text("DAY")) {
+    //                        Text(self.item.day!)
+    //                            .foregroundColor(.blue)
+    //                    }
+    //
+    //                    Section(header: Text("DATE")) {
+    //                        DatePicker("", selection: $item.date ?? Date(), in: dateRange, displayedComponents: [.date])
+    //                            .padding(.trailing, screenWidth * 0.37)
+    //                    }
+    //
+    //                    Section(header: Text("FINISHED")) {
+    //                        Toggle("", isOn: $item.finished)
+    //                            .padding(.trailing, screenWidth * 0.45)
+    //                    }
+    //                }
+    //                .textFieldStyle(RoundedBorderTextFieldStyle())
+                    
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous)
+                            .fill(Color.red)
+                            .frame(width: screenWidth * 0.3, height: screenHeight * 0.05)
+                        
+                        Button(action: { showTaskView = true }) {
+                            Label("Save Task", systemImage: "")
+                                .foregroundColor(.white)
+                        }
+                    }
+                }
+            }
+            .preferredColorScheme(darkMode ? .dark : .light)
+            .environment(\.colorScheme, darkMode ? .dark : .light)
         }
     }
 }
@@ -182,6 +233,37 @@ struct DetailView: View {
         }
     }
     
+}
+
+struct TopView: View {
+    @AppStorage("isDarkMode") private var darkMode = false
+    
+    var body: some View {
+        GeometryReader { geometry in
+            let screenWidth = geometry.size.width
+            let screenHeight = geometry.size.height
+            
+            HStack {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 25)
+                        .foregroundColor(darkMode == true ? .white : .black)
+                        .frame(width: screenWidth * 0.55, height: screenHeight * 0.75)
+                    
+                    Text("To-Do List 📝")
+                        .font(.largeTitle)
+                        .foregroundColor(darkMode == true ? .black : .white)
+                }
+                .padding(.leading, screenWidth * 0.05)
+                
+                Spacer()
+                
+                Toggle("", isOn: $darkMode)
+                    .toggleStyle(SwitchToggleStyle(tint: .clear))
+                    .frame(width: screenWidth * 0.15)
+                    .padding(.trailing, screenWidth * 0.1)
+            }
+        }
+    }
 }
 
 public func ??<T>(lhs: Binding<Optional<T>>, rhs: T) -> Binding<T> {
