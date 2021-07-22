@@ -33,7 +33,6 @@ struct ContentView: View {
         GeometryReader { geometry in
             let screenWidth = geometry.size.width
             let screenHeight = geometry.size.height
-            let groupedItems = groupItems()
             
             if showAddFormView {
                 AddTaskView()
@@ -44,8 +43,8 @@ struct ContentView: View {
                         .padding(.top, screenHeight * 0.025)
                     
                     NavigationView {
-                        List(groupedItems, children: \.items) { row in
-                            ForEach(row.items!) { item in
+                        List {
+                            ForEach(items) { item in
                                 NavigationLink(destination: DetailView(newItem: item)) {
                                     HStack {
                                         Text("\(item.title!)")
