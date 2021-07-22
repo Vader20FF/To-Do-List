@@ -23,6 +23,8 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @AppStorage("isDarkMode") private var darkMode = false
     @State var showAddFormView = false
+    @State var showDetailView = false
+    @State var activeItem = Item()
 
     @FetchRequest(
             sortDescriptors: [NSSortDescriptor(keyPath: \Item.title, ascending: true)],
@@ -33,38 +35,47 @@ struct ContentView: View {
         GeometryReader { geometry in
             let screenWidth = geometry.size.width
             let screenHeight = geometry.size.height
+            let categories = groupItems()
             
             if showAddFormView {
-                AddTaskView()
+                withAnimation {
+                    AddTaskView()
+                }
+            } else if showDetailView {
+                withAnimation {
+                    DetailView(newItem: activeItem)
+                }
             } else {
                 VStack {
                     TopView()
                         .frame(width: screenWidth, height: screenHeight * 0.1)
                         .padding(.top, screenHeight * 0.025)
                     
-                    NavigationView {
-                        List {
-                            ForEach(items) { item in
-                                NavigationLink(destination: DetailView(newItem: item)) {
-                                    HStack {
-                                        Text("\(item.title!)")
-                                            .font(.system(size: screenWidth * 0.05))
-                                            .frame(width: screenWidth * 0.6, height: screenHeight * 0.04, alignment: .leading)
-                                        
-                                        if item.finished == true {
-                                            Circle().foregroundColor(.green)
-                                                .frame(width: screenWidth * 0.2, height: screenHeight * 0.035)
-                                        } else {
-                                            Circle().foregroundColor(.red)
-                                                .frame(width: screenWidth * 0.2, height: screenHeight * 0.035)
-                                        }
-                                    }
+                    List {
+                        ForEach(items) { item in
+                            HStack {
+                                Text("\(item.title!)")
+                                    .font(.system(size: screenWidth * 0.05))
+                                    .frame(width: screenWidth * 0.6, height: screenHeight * 0.04, alignment: .leading)
+                                
+                                if item.finished == true {
+                                    Circle().foregroundColor(.green)
+                                        .frame(width: screenWidth * 0.2, height: screenHeight * 0.035)
+                                } else {
+                                    Circle().foregroundColor(.red)
+                                        .frame(width: screenWidth * 0.2, height: screenHeight * 0.035)
                                 }
-                                .frame(width: screenWidth * 0.9, height: screenHeight * 0.055, alignment: .center)
+                                
+                                Text(">")
+                                    .foregroundColor(.gray)
                             }
-                            .onDelete(perform: deleteItems)
+                            .frame(width: screenWidth * 0.87, height: screenHeight * 0.06)
+                            .onTapGesture {
+                                activeItem = item
+                                showDetailView = true
+                            }
                         }
-                        .navigationBarHidden(true)
+                        .onDelete(perform: deleteItems)
                     }
                     
                     ZStack {
@@ -77,6 +88,7 @@ struct ContentView: View {
                                 .foregroundColor(.white)
                         }
                     }
+                    
                 }
                 .preferredColorScheme(darkMode ? .dark : .light)
                 .environment(\.colorScheme, darkMode ? .dark : .light)
@@ -234,6 +246,8 @@ struct AddTaskView: View {
 }
 
 struct DetailView: View {
+    @AppStorage("isDarkMode") private var darkMode = false
+    @State var showTaskView = false
     @State private var item: Item
     
     init(newItem: Item) {
@@ -246,32 +260,60 @@ struct DetailView: View {
             let screenHeight = geometry.size.height
             
             VStack (spacing: screenHeight * 0.04) {
-                Section(header: Text("TITLE")) {
-                    TextField(self.item.title!, text: $item.title ?? "")
-                        .padding(.horizontal, screenWidth * 0.05)
-                }
-                
-                Section(header: Text("DESCRIPTION")) {
-                    TextField(self.item.fullDescription!, text: $item.fullDescription ?? "")
-                        .padding(.horizontal, screenWidth * 0.05)
-                }
-                
-                Section(header: Text("DAY")) {
-                    Text(self.item.day!)
-                        .foregroundColor(.blue)
-                }
-                
-                Section(header: Text("DATE")) {
-                    DatePicker("", selection: $item.date ?? Date(), in: dateRange, displayedComponents: [.date])
-                        .padding(.trailing, screenWidth * 0.37)
-                }
-                
-                Section(header: Text("FINISHED")) {
-                    Toggle("", isOn: $item.finished)
-                        .padding(.trailing, screenWidth * 0.45)
+                if showTaskView {
+                    ContentView()
+                } else {
+                    TopView()
+                        .frame(width: screenWidth, height: screenHeight * 0.1)
+                        .padding(.top, screenHeight * 0.025)
+                    
+                    Spacer()
+                    
+                    Section(header: Text("TITLE")) {
+                        TextField(self.item.title!, text: $item.title ?? "")
+                            .padding(.horizontal, screenWidth * 0.05)
+                    }
+                    
+                    Section(header: Text("DESCRIPTION")) {
+                        TextField(self.item.fullDescription!, text: $item.fullDescription ?? "")
+                            .padding(.horizontal, screenWidth * 0.05)
+                    }
+                    
+                    Section(header: Text("DAY")) {
+                        Text(self.item.day!)
+                            .foregroundColor(.blue)
+                    }
+                    
+                    Section(header: Text("DATE")) {
+                        DatePicker("", selection: $item.date ?? Date(), in: dateRange, displayedComponents: [.date])
+                            .padding(.trailing, screenWidth * 0.37)
+                    }
+                    
+                    Section(header: Text("FINISHED")) {
+                        Toggle("", isOn: $item.finished)
+                            .padding(.trailing, screenWidth * 0.45)
+                    }
+                    
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous)
+                            .fill(Color.green)
+                            .frame(width: screenWidth * 0.38, height: screenHeight * 0.05, alignment: .center)
+                        
+                        Button(action: {
+                            withAnimation {
+                                showTaskView = true
+                            }
+                        }) {
+                            Label("Save Changes", systemImage: "")
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .padding(.bottom, screenHeight * 0.02)
                 }
             }
             .textFieldStyle(RoundedBorderTextFieldStyle())
+            .preferredColorScheme(darkMode ? .dark : .light)
+            .environment(\.colorScheme, darkMode ? .dark : .light)
         }
     }
     
