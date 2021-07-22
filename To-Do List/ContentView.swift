@@ -33,6 +33,7 @@ struct ContentView: View {
         GeometryReader { geometry in
             let screenWidth = geometry.size.width
             let screenHeight = geometry.size.height
+            let groupedItems = groupItems()
             
             if showAddFormView {
                 AddTaskView()
@@ -43,25 +44,26 @@ struct ContentView: View {
                         .padding(.top, screenHeight * 0.025)
                     
                     NavigationView {
-                        VStack {
-                            List {
-                                ForEach(items) { item in
-                                    NavigationLink(destination: DetailView(newItem: item)) {
-                                        HStack {
-                                            Text("\(item.title!)")
-                                                .font(.system(size: screenWidth * 0.05))
-                                                .frame(width: screenWidth * 0.6, height: screenHeight * 0.04, alignment: .leading)
-                                            
-                                            if item.finished == true {
-                                                Circle().foregroundColor(.green)
-                                            } else {
-                                                Circle().foregroundColor(.red)
-                                            }
+                        List(groupedItems, children: \.items) { row in
+                            ForEach(row.items!) { item in
+                                NavigationLink(destination: DetailView(newItem: item)) {
+                                    HStack {
+                                        Text("\(item.title!)")
+                                            .font(.system(size: screenWidth * 0.05))
+                                            .frame(width: screenWidth * 0.6, height: screenHeight * 0.04, alignment: .leading)
+                                        
+                                        if item.finished == true {
+                                            Circle().foregroundColor(.green)
+                                                .frame(width: screenWidth * 0.2, height: screenHeight * 0.035)
+                                        } else {
+                                            Circle().foregroundColor(.red)
+                                                .frame(width: screenWidth * 0.2, height: screenHeight * 0.035)
                                         }
                                     }
                                 }
-                                .onDelete(perform: deleteItems)
+                                .frame(width: screenWidth * 0.9, height: screenHeight * 0.055, alignment: .center)
                             }
+                            .onDelete(perform: deleteItems)
                         }
                         .navigationBarHidden(true)
                     }
@@ -83,17 +85,27 @@ struct ContentView: View {
         }
     }
     
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.title = "newItem"
-            newItem.fullDescription = "description"
-            newItem.day = getDayOfTheWeekFromDate(passedDate: Date())
-            newItem.date = Date()
-            newItem.finished = false
-
-            saveContext()
+    struct Category: Identifiable {
+        let id = UUID()
+        let name: String
+        let items: [Item]?
+    }
+    
+    private func groupItems() -> [Category] {
+        var categories: [Category] = []
+        var itemsForEachCategory: [Item] = []
+        
+        for day in daysOfTheWeek {
+            for item in items {
+                if item.day! == daysOfTheWeek[0] {
+                    itemsForEachCategory.append(item)
+                }
+            }
+            categories.append(Category(name: day, items: itemsForEachCategory))
+            
         }
+        
+        return categories
     }
     
     private func saveContext() {
@@ -104,16 +116,6 @@ struct ContentView: View {
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
     }
-    
-//    private func divideItemsAccordingToTheirDays(items: [Item]) -> [[Item]] {
-//        var itemsInDays: [[Item]] = [[], [], [], [], [], [], []]
-//
-//        ForEach(items, id: \.self) { item in
-//            if item.day! == "Monday" {
-//                itemsInDays[] = item
-//            }
-//        }
-//    }
 
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
