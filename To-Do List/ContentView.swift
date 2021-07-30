@@ -8,8 +8,6 @@
 import SwiftUI
 import CoreData
 
-let daysOfTheWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-
 let dateRange: ClosedRange<Date> = {
     let calendar = Calendar.current
     let startComponents = DateComponents(year: 2021, month: 1, day: 1)
@@ -27,7 +25,7 @@ struct ContentView: View {
     @State var activeItem = Item()
 
     @FetchRequest(
-            sortDescriptors: [NSSortDescriptor(keyPath: \Item.title, ascending: true)],
+            sortDescriptors: [NSSortDescriptor(keyPath: \Item.date, ascending: true)],
             animation: .default)
     private var items: FetchedResults<Item>
 
@@ -35,16 +33,11 @@ struct ContentView: View {
         GeometryReader { geometry in
             let screenWidth = geometry.size.width
             let screenHeight = geometry.size.height
-            let categories = groupItems()
             
             if showAddFormView {
-                withAnimation {
-                    AddTaskView()
-                }
+                AddTaskView()
             } else if showDetailView {
-                withAnimation {
-                    DetailView(newItem: activeItem)
-                }
+                DetailView(newItem: activeItem)
             } else {
                 VStack {
                     TopView()
@@ -54,22 +47,36 @@ struct ContentView: View {
                     List {
                         ForEach(items) { item in
                             HStack {
+                                VStack {
+                                    Text(item.day!)
+                                    Text(getStringFromDate(date: item.date!))
+                                }
+                                .frame(width: screenWidth * 0.22, height: screenHeight * 0.2)
+                                
+                                Divider()
+                                
                                 Text("\(item.title!)")
                                     .font(.system(size: screenWidth * 0.05))
-                                    .frame(width: screenWidth * 0.6, height: screenHeight * 0.04, alignment: .leading)
+                                    .frame(width: screenWidth * 0.5, height: screenHeight * 0.04, alignment: .leading)
                                 
                                 if item.finished == true {
-                                    Circle().foregroundColor(.green)
-                                        .frame(width: screenWidth * 0.2, height: screenHeight * 0.035)
+                                    ZStack {
+                                        Circle().foregroundColor(.green)
+                                            .frame(width: screenWidth * 0.2, height: screenHeight * 0.035)
+                                            .onTapGesture {
+                                                item.finished = false
+                                            }
+                                        Text("✓")
+                                    }
                                 } else {
                                     Circle().foregroundColor(.red)
                                         .frame(width: screenWidth * 0.2, height: screenHeight * 0.035)
+                                        .onTapGesture {
+                                            item.finished = true
+                                        }
                                 }
-                                
-                                Text(">")
-                                    .foregroundColor(.gray)
                             }
-                            .frame(width: screenWidth * 0.87, height: screenHeight * 0.06)
+                            .frame(width: screenWidth * 0.9, height: screenHeight * 0.06)
                             .onTapGesture {
                                 activeItem = item
                                 showDetailView = true
@@ -102,21 +109,10 @@ struct ContentView: View {
         let items: [Item]?
     }
     
-    private func groupItems() -> [Category] {
-        var categories: [Category] = []
-        var itemsForEachCategory: [Item] = []
-        
-        for day in daysOfTheWeek {
-            for item in items {
-                if item.day! == daysOfTheWeek[0] {
-                    itemsForEachCategory.append(item)
-                }
-            }
-            categories.append(Category(name: day, items: itemsForEachCategory))
-            
-        }
-        
-        return categories
+    private func getStringFromDate(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "YY/MM/dd"
+        return dateFormatter.string(from: date)
     }
     
     private func saveContext() {
