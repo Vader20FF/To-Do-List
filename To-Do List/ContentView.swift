@@ -109,6 +109,7 @@ struct ContentView: View {
                     }
                     
                 }
+                .ignoresSafeArea(.keyboard)
                 .preferredColorScheme(darkMode ? .dark : .light)
                 .environment(\.colorScheme, darkMode ? .dark : .light)
             }
@@ -238,6 +239,7 @@ struct AddTaskView: View {
                     }
                 }
             }
+            .ignoresSafeArea(.keyboard)
             .preferredColorScheme(darkMode ? .dark : .light)
             .environment(\.colorScheme, darkMode ? .dark : .light)
         }
@@ -319,6 +321,7 @@ struct DetailView: View {
                     .padding(.bottom, screenHeight * 0.02)
                 }
             }
+            .ignoresSafeArea(.keyboard)
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .preferredColorScheme(darkMode ? .dark : .light)
             .environment(\.colorScheme, darkMode ? .dark : .light)
