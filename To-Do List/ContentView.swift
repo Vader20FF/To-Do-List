@@ -85,7 +85,7 @@ struct ContentView: View {
                             .frame(width: screenWidth * 0.9, height: screenHeight * 0.06)
                             .onTapGesture {
                                 activeItem = item
-                                withAnimation {
+                                withAnimation(.spring()) {
                                     showDetailView.toggle()
                                 }
                             }
@@ -99,7 +99,7 @@ struct ContentView: View {
                             .frame(width: screenWidth * 0.3, height: screenHeight * 0.05)
                         
                         Button(action: {
-                            withAnimation {
+                            withAnimation(.spring()) {
                                 showAddFormView = true
                             }
                         }) {
@@ -171,7 +171,7 @@ struct AddTaskView: View {
                     
                     Spacer()
                     
-                    VStack (spacing: screenHeight * 0.04) {
+                    VStack (spacing: screenHeight * 0.06) {
                         Section(header: Text("TITLE")) {
                             TextField("", text: $itemTitle)
                                 .padding(.horizontal, screenWidth * 0.05)
@@ -180,11 +180,6 @@ struct AddTaskView: View {
                         Section(header: Text("DESCRIPTION")) {
                             TextField("", text: $itemFullDescription)
                                 .padding(.horizontal, screenWidth * 0.05)
-                        }
-                        
-                        Section(header: Text("DAY")) {
-                            Text("")
-                                .foregroundColor(.blue)
                         }
                         
                         Section(header: Text("DATE")) {
@@ -269,7 +264,7 @@ struct DetailView: View {
             let screenWidth = geometry.size.width
             let screenHeight = geometry.size.height
             
-            VStack (spacing: screenHeight * 0.04) {
+            VStack {
                 if showTaskView {
                     ContentView()
                 } else {
@@ -279,46 +274,43 @@ struct DetailView: View {
                     
                     Spacer()
                     
-                    Section(header: Text("TITLE")) {
-                        TextField(self.item.title!, text: $item.title ?? "")
-                            .padding(.horizontal, screenWidth * 0.05)
-                    }
-                    
-                    Section(header: Text("DESCRIPTION")) {
-                        TextField(self.item.fullDescription!, text: $item.fullDescription ?? "")
-                            .padding(.horizontal, screenWidth * 0.05)
-                    }
-                    
-                    Section(header: Text("DAY")) {
-                        Text(self.item.day!)
-                            .foregroundColor(.blue)
-                    }
-                    
-                    Section(header: Text("DATE")) {
-                        DatePicker("", selection: $item.date ?? Date(), in: dateRange, displayedComponents: [.date])
-                            .padding(.trailing, screenWidth * 0.37)
-                    }
-                    
-                    Section(header: Text("FINISHED")) {
-                        Toggle("", isOn: $item.finished)
-                            .padding(.trailing, screenWidth * 0.45)
-                    }
-                    
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(Color.green)
-                            .frame(width: screenWidth * 0.38, height: screenHeight * 0.05, alignment: .center)
-                        
-                        Button(action: {
-                            withAnimation {
-                                showTaskView.toggle()
-                            }
-                        }) {
-                            Label("Save Changes", systemImage: "")
-                                .foregroundColor(.white)
+                    VStack (spacing: screenHeight * 0.06) {
+                        Section(header: Text("TITLE")) {
+                            TextField(self.item.title!, text: $item.title ?? "")
+                                .padding(.horizontal, screenWidth * 0.05)
                         }
+                        
+                        Section(header: Text("DESCRIPTION")) {
+                            TextField(self.item.fullDescription!, text: $item.fullDescription ?? "")
+                                .padding(.horizontal, screenWidth * 0.05)
+                        }
+                        
+                        Section(header: Text("DATE")) {
+                            DatePicker("", selection: $item.date ?? Date(), in: dateRange, displayedComponents: [.date])
+                                .padding(.trailing, screenWidth * 0.37)
+                        }
+                        
+                        Section(header: Text("FINISHED")) {
+                            Toggle("", isOn: $item.finished)
+                                .padding(.trailing, screenWidth * 0.45)
+                        }
+                        
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                .fill(Color.green)
+                                .frame(width: screenWidth * 0.38, height: screenHeight * 0.05, alignment: .center)
+                            
+                            Button(action: {
+                                withAnimation {
+                                    showTaskView.toggle()
+                                }
+                            }) {
+                                Label("Save Changes", systemImage: "")
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        .padding(.bottom, screenHeight * 0.02)
                     }
-                    .padding(.bottom, screenHeight * 0.02)
                 }
             }
             .ignoresSafeArea(.keyboard)
@@ -352,10 +344,15 @@ struct TopView: View {
                 
                 Spacer()
                 
-                Toggle("", isOn: $darkMode)
-                    .toggleStyle(SwitchToggleStyle(tint: .clear))
-                    .frame(width: screenWidth * 0.15)
-                    .padding(.trailing, screenWidth * 0.1)
+                VStack {
+                    Text("☀️ / 🌙")
+                        .padding(.trailing, screenWidth * 0.065)
+                    Toggle("", isOn: $darkMode)
+                        .toggleStyle(SwitchToggleStyle(tint: .clear))
+                        .frame(width: screenWidth * 0.15)
+                        .padding(.trailing, screenWidth * 0.1)
+                }
+                .padding(.bottom, screenHeight * 0.23)
             }
         }
     }
