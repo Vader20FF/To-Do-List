@@ -48,8 +48,12 @@ struct ContentView: View {
                         ForEach(items) { item in
                             HStack {
                                 VStack {
-                                    Text(item.day!)
-                                    Text(getStringFromDate(date: item.date!))
+                                    Group {
+                                        Text(item.day!)
+                                        Text(getStringFromDate(date: item.date!))
+                                    }
+                                    .foregroundColor(.gray)
+                                    
                                 }
                                 .frame(width: screenWidth * 0.22, height: screenHeight * 0.2)
                                 
@@ -79,7 +83,9 @@ struct ContentView: View {
                             .frame(width: screenWidth * 0.9, height: screenHeight * 0.06)
                             .onTapGesture {
                                 activeItem = item
-                                showDetailView = true
+                                withAnimation {
+                                    showDetailView.toggle()
+                                }
                             }
                         }
                         .onDelete(perform: deleteItems)
@@ -90,7 +96,11 @@ struct ContentView: View {
                             .fill(Color.blue)
                             .frame(width: screenWidth * 0.3, height: screenHeight * 0.05)
                         
-                        Button(action: { showAddFormView = true }) {
+                        Button(action: {
+                            withAnimation {
+                                showAddFormView = true
+                            }
+                        }) {
                             Label("Add Task", systemImage: "plus")
                                 .foregroundColor(.white)
                         }
@@ -214,9 +224,9 @@ struct AddTaskView: View {
                                 item.day = getDayOfTheWeekFromDate(passedDate: itemDate)
                                 item.date = itemDate
                                 item.finished = itemFinished
+                                saveContext()
                                 withAnimation {
-                                    saveContext()
-                                    showTaskView = true
+                                    showTaskView.toggle()
                                 }
                             }) {
                                 Label("Save Task", systemImage: "")
@@ -297,7 +307,7 @@ struct DetailView: View {
                         
                         Button(action: {
                             withAnimation {
-                                showTaskView = true
+                                showTaskView.toggle()
                             }
                         }) {
                             Label("Save Changes", systemImage: "")
