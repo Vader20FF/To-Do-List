@@ -69,6 +69,7 @@ struct ContentView: View {
                                             .frame(width: screenWidth * 0.2, height: screenHeight * 0.035)
                                             .onTapGesture {
                                                 item.finished = false
+                                                saveContext()
                                             }
                                         Text("✓")
                                     }
@@ -77,6 +78,7 @@ struct ContentView: View {
                                         .frame(width: screenWidth * 0.2, height: screenHeight * 0.035)
                                         .onTapGesture {
                                             item.finished = true
+                                            saveContext()
                                         }
                                 }
                             }
