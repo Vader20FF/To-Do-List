@@ -1,0 +1,23 @@
+/* 
+  Localizable.strings
+  To-Do List
+
+  Created by Łukasz Janiszewski on 31/07/2021.
+  
+*/
+
+"Add Task" = "Dodaj zadanie";
+"Monday" = "Poniedziałek";
+"Tuesday" = "Wtorek";
+"Wednesday" = "Środa";
+"Thursday" = "Czwartek";
+"Friday" = "Piątek";
+"Saturday" = "Sobota";
+"Sunday" = "Niedziela";
+"TITLE" = "TYTUŁ";
+"DESCRIPTION" = "OPIS";
+"DATE" = "DATA";
+"FINISHED" = "UKOŃCZONE";
+"Cancel" = "Anuluj";
+"Save Task" = "Zapisz Zadanie";
+"Save Changes" = "Zapisz Zmiany";

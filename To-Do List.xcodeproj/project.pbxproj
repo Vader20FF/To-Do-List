@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A2953DF26B55A3B00686D07 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0A2953E126B55A3B00686D07 /* Localizable.strings */; };
 		0A965CFA26A2DF9300C7B456 /* To_Do_ListApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A965CF926A2DF9300C7B456 /* To_Do_ListApp.swift */; };
 		0A965CFC26A2DF9300C7B456 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A965CFB26A2DF9300C7B456 /* ContentView.swift */; };
 		0A965CFE26A2DF9300C7B456 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A965CFD26A2DF9300C7B456 /* Assets.xcassets */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0A2953E026B55A3B00686D07 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0A965CF626A2DF9300C7B456 /* To-Do List.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "To-Do List.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A965CF926A2DF9300C7B456 /* To_Do_ListApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = To_Do_ListApp.swift; sourceTree = "<group>"; };
 		0A965CFB26A2DF9300C7B456 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -56,6 +58,7 @@
 		0A965CF826A2DF9300C7B456 /* To-Do List */ = {
 			isa = PBXGroup;
 			children = (
+				0A2953E126B55A3B00686D07 /* Localizable.strings */,
 				0A965CF926A2DF9300C7B456 /* To_Do_ListApp.swift */,
 				0A965CFB26A2DF9300C7B456 /* ContentView.swift */,
 				0A965CFD26A2DF9300C7B456 /* Assets.xcassets */,
@@ -116,6 +119,7 @@
 			knownRegions = (
 				en,
 				Base,
+				pl,
 			);
 			mainGroup = 0A965CED26A2DF9300C7B456;
 			productRefGroup = 0A965CF726A2DF9300C7B456 /* Products */;
@@ -133,6 +137,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A965D0126A2DF9300C7B456 /* Preview Assets.xcassets in Resources */,
+				0A2953DF26B55A3B00686D07 /* Localizable.strings in Resources */,
 				0A965CFE26A2DF9300C7B456 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -152,6 +157,18 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		0A2953E126B55A3B00686D07 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0A2953E026B55A3B00686D07 /* pl */,
+			);
+			name = Localizable.strings;
+			path = ..;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		0A965D0826A2DF9300C7B456 /* Debug */ = {

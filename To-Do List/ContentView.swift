@@ -49,8 +49,10 @@ struct ContentView: View {
                             HStack {
                                 VStack {
                                     Group {
-                                        Text(item.day!)
+                                        Text(LocalizedStringKey(item.day!))
+                                            .font(.system(size: screenHeight * 0.018))
                                         Text(getStringFromDate(date: item.date!))
+                                            .font(.system(size: screenHeight * 0.02))
                                     }
                                     .foregroundColor(.gray)
                                     
@@ -96,7 +98,7 @@ struct ContentView: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 25, style: .continuous)
                             .fill(Color.blue)
-                            .frame(width: screenWidth * 0.3, height: screenHeight * 0.065)
+                            .frame(width: screenWidth * 0.4, height: screenHeight * 0.065)
                         
                         Button(action: {
                             withAnimation(.spring()) {
@@ -125,7 +127,7 @@ struct ContentView: View {
     
     private func getStringFromDate(date: Date) -> String {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "YY/MM/dd"
+        dateFormatter.dateFormat = "dd/MM/YY"
         return dateFormatter.string(from: date)
     }
     
@@ -203,44 +205,39 @@ struct AddTaskView: View {
                     }
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     
-                    HStack (spacing: screenWidth * 0.1) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 25, style: .continuous)
-                                .fill(Color.red)
-                                .frame(width: screenWidth * 0.3, height: screenHeight * 0.065)
-                            
-                            Button(action: { showTaskView = true }) {
-                                Label("Cancel", systemImage: "")
-                                    .foregroundColor(.white)
-                                    .padding(.trailing, screenWidth * 0.02)
-                            }
+                    HStack (spacing: screenWidth * 0.24) {
+                        Button(action: { showTaskView = true }) {
+                            Label("Cancel", systemImage: "")
+                                .foregroundColor(.white)
+                                .padding(.trailing, screenWidth * 0.02)
                         }
+                        .background(RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                        .fill(Color.red)
+                                        .frame(width: screenWidth * 0.4, height: screenHeight * 0.065))
                         
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 25, style: .continuous)
-                                .fill(Color.green)
-                                .frame(width: screenWidth * 0.3, height: screenHeight * 0.065)
+                        Button(action: {
+                            let item = Item(context: viewContext)
                             
-                            Button(action: {
-                                let item = Item(context: viewContext)
-                                
-                                item.title = itemTitle
-                                item.fullDescription = itemFullDescription
-                                item.day = getDayOfTheWeekFromDate(passedDate: itemDate)
-                                item.date = itemDate
-                                item.finished = itemFinished
-                                saveContext()
-                                withAnimation {
-                                    showTaskView.toggle()
-                                }
-                            }) {
-                                Label("Save Task", systemImage: "")
-                                    .foregroundColor(.white)
+                            item.title = itemTitle
+                            item.fullDescription = itemFullDescription
+                            item.day = getDayOfTheWeekFromDate(passedDate: itemDate)
+                            item.date = itemDate
+                            item.finished = itemFinished
+                            saveContext()
+                            withAnimation {
+                                showTaskView.toggle()
                             }
+                        }) {
+                            Label("Save Task", systemImage: "")
+                                .foregroundColor(.white)
                         }
+                        .background(RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                        .fill(Color.green)
+                                        .frame(width: screenWidth * 0.4, height: screenHeight * 0.065))
                     }
                     .padding(.bottom, screenHeight * 0.05)
-                    .padding(.top, screenHeight * 0.07)
+                    .padding(.top, screenHeight * 0.15)
+                    .padding(.leading, screenWidth * 0.07)
                 }
             }
             .ignoresSafeArea(.keyboard)
@@ -312,23 +309,19 @@ struct DetailView: View {
                                 .padding(.trailing, screenWidth * 0.45)
                         }
                     }
-                    
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(Color.green)
-                            .frame(width: screenWidth * 0.38, height: screenHeight * 0.065, alignment: .center)
-                        
-                        Button(action: {
-                            withAnimation {
-                                showTaskView.toggle()
-                            }
-                        }) {
-                            Label("Save Changes", systemImage: "")
-                                .foregroundColor(.white)
+                    Button(action: {
+                        withAnimation {
+                            showTaskView.toggle()
                         }
+                    }) {
+                        Label("Save Changes", systemImage: "")
+                            .foregroundColor(.white)
                     }
+                    .background(RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                    .fill(Color.green)
+                                    .frame(width: screenWidth * 0.38, height: screenHeight * 0.065, alignment: .center))
                     .padding(.bottom, screenHeight * 0.05)
-                    .padding(.top, screenHeight * 0.07)
+                    .padding(.top, screenHeight * 0.15)
                 }
             }
             .ignoresSafeArea(.keyboard)
@@ -414,7 +407,8 @@ public func getDayOfTheWeekFromDate(passedDate: Date) -> String {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        ContentView()
+            .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
 
