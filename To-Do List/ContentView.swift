@@ -41,7 +41,7 @@ struct ContentView: View {
             } else {
                 VStack {
                     TopView()
-                        .frame(width: screenWidth, height: screenHeight * 0.1)
+                        .frame(width: screenWidth, height: screenHeight * 0.14)
                         .padding(.top, screenHeight * 0.025)
                     
                     List {
@@ -96,7 +96,7 @@ struct ContentView: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 25, style: .continuous)
                             .fill(Color.blue)
-                            .frame(width: screenWidth * 0.3, height: screenHeight * 0.05)
+                            .frame(width: screenWidth * 0.3, height: screenHeight * 0.065)
                         
                         Button(action: {
                             withAnimation(.spring()) {
@@ -107,6 +107,7 @@ struct ContentView: View {
                                 .foregroundColor(.white)
                         }
                     }
+                    .padding(.vertical, screenHeight * 0.026)
                     
                 }
                 .ignoresSafeArea(.keyboard)
@@ -166,26 +167,34 @@ struct AddTaskView: View {
                     ContentView()
                 } else {
                     TopView()
-                        .frame(width: screenWidth, height: screenHeight * 0.1)
+                        .frame(width: screenWidth, height: screenHeight * 0.14)
                         .padding(.top, screenHeight * 0.025)
                     
                     Spacer()
                     
-                    VStack (spacing: screenHeight * 0.06) {
+                    VStack {
+                        Spacer()
+                        
                         Section(header: Text("TITLE")) {
                             TextField("", text: $itemTitle)
                                 .padding(.horizontal, screenWidth * 0.05)
                         }
+                        
+                        Spacer()
                         
                         Section(header: Text("DESCRIPTION")) {
                             TextField("", text: $itemFullDescription)
                                 .padding(.horizontal, screenWidth * 0.05)
                         }
                         
+                        Spacer()
+                        
                         Section(header: Text("DATE")) {
                             DatePicker("", selection: $itemDate, in: dateRange, displayedComponents: [.date])
                                 .padding(.trailing, screenWidth * 0.37)
                         }
+                        
+                        Spacer()
                         
                         Section(header: Text("FINISHED")) {
                             Toggle("", isOn: $itemFinished)
@@ -194,13 +203,11 @@ struct AddTaskView: View {
                     }
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     
-                    Spacer()
-                    
                     HStack (spacing: screenWidth * 0.1) {
                         ZStack {
                             RoundedRectangle(cornerRadius: 25, style: .continuous)
                                 .fill(Color.red)
-                                .frame(width: screenWidth * 0.3, height: screenHeight * 0.05)
+                                .frame(width: screenWidth * 0.3, height: screenHeight * 0.065)
                             
                             Button(action: { showTaskView = true }) {
                                 Label("Cancel", systemImage: "")
@@ -212,7 +219,7 @@ struct AddTaskView: View {
                         ZStack {
                             RoundedRectangle(cornerRadius: 25, style: .continuous)
                                 .fill(Color.green)
-                                .frame(width: screenWidth * 0.3, height: screenHeight * 0.05)
+                                .frame(width: screenWidth * 0.3, height: screenHeight * 0.065)
                             
                             Button(action: {
                                 let item = Item(context: viewContext)
@@ -232,6 +239,8 @@ struct AddTaskView: View {
                             }
                         }
                     }
+                    .padding(.bottom, screenHeight * 0.05)
+                    .padding(.top, screenHeight * 0.07)
                 }
             }
             .ignoresSafeArea(.keyboard)
@@ -269,48 +278,57 @@ struct DetailView: View {
                     ContentView()
                 } else {
                     TopView()
-                        .frame(width: screenWidth, height: screenHeight * 0.1)
+                        .frame(width: screenWidth, height: screenHeight * 0.14)
                         .padding(.top, screenHeight * 0.025)
                     
                     Spacer()
                     
-                    VStack (spacing: screenHeight * 0.06) {
+                    VStack {
+                        Spacer()
+                        
                         Section(header: Text("TITLE")) {
                             TextField(self.item.title!, text: $item.title ?? "")
                                 .padding(.horizontal, screenWidth * 0.05)
                         }
+                        
+                        Spacer()
                         
                         Section(header: Text("DESCRIPTION")) {
                             TextField(self.item.fullDescription!, text: $item.fullDescription ?? "")
                                 .padding(.horizontal, screenWidth * 0.05)
                         }
                         
+                        Spacer()
+                        
                         Section(header: Text("DATE")) {
                             DatePicker("", selection: $item.date ?? Date(), in: dateRange, displayedComponents: [.date])
                                 .padding(.trailing, screenWidth * 0.37)
                         }
                         
+                        Spacer()
+                        
                         Section(header: Text("FINISHED")) {
                             Toggle("", isOn: $item.finished)
                                 .padding(.trailing, screenWidth * 0.45)
                         }
-                        
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 25, style: .continuous)
-                                .fill(Color.green)
-                                .frame(width: screenWidth * 0.38, height: screenHeight * 0.05, alignment: .center)
-                            
-                            Button(action: {
-                                withAnimation {
-                                    showTaskView.toggle()
-                                }
-                            }) {
-                                Label("Save Changes", systemImage: "")
-                                    .foregroundColor(.white)
-                            }
-                        }
-                        .padding(.bottom, screenHeight * 0.02)
                     }
+                    
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous)
+                            .fill(Color.green)
+                            .frame(width: screenWidth * 0.38, height: screenHeight * 0.065, alignment: .center)
+                        
+                        Button(action: {
+                            withAnimation {
+                                showTaskView.toggle()
+                            }
+                        }) {
+                            Label("Save Changes", systemImage: "")
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .padding(.bottom, screenHeight * 0.05)
+                    .padding(.top, screenHeight * 0.07)
                 }
             }
             .ignoresSafeArea(.keyboard)
