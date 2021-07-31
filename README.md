@@ -15,6 +15,7 @@
 - Mark task as finished either by clicking the dot next to task title or checking finished state in edit view
 - Change light / dark mode
 
-# Preview:
 
+# Preview:
+https://user-images.githubusercontent.com/78795431/127740054-6034b922-51c7-4f24-8ba5-2d8acd4a1ab5.mp4
 
