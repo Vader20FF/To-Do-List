@@ -19,6 +19,7 @@ let dateRange: ClosedRange<Date> = {
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.locale) private var locale
     @AppStorage("isDarkMode") private var darkMode = false
     @State var showAddFormView = false
     @State var showDetailView = false
@@ -237,7 +238,6 @@ struct AddTaskView: View {
                     }
                     .padding(.bottom, screenHeight * 0.05)
                     .padding(.top, screenHeight * 0.15)
-                    .padding(.leading, screenWidth * 0.07)
                 }
             }
             .ignoresSafeArea(.keyboard)

@@ -18,6 +18,7 @@
 
 /* Begin PBXFileReference section */
 		0A2953E026B55A3B00686D07 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		0A2953E226B56E5800686D07 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0A965CF626A2DF9300C7B456 /* To-Do List.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "To-Do List.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A965CF926A2DF9300C7B456 /* To_Do_ListApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = To_Do_ListApp.swift; sourceTree = "<group>"; };
 		0A965CFB26A2DF9300C7B456 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -163,6 +164,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				0A2953E026B55A3B00686D07 /* pl */,
+				0A2953E226B56E5800686D07 /* en */,
 			);
 			name = Localizable.strings;
 			path = ..;
