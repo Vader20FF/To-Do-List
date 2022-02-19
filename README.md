@@ -14,9 +14,9 @@ A simple to-do list iOS app in which users can add their tasks, monitor their st
 
 
 ## Technologies
-Swift 5 [SwiftUI]    
-Xcode 13  
-CoreData    
+* Swift 5 [SwiftUI]    
+* Xcode 13  
+* CoreData    
 
 
 ## Status
